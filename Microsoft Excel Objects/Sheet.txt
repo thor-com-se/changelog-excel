@@ -1,10 +1,10 @@
 Private Sub Worksheet_Change(ByVal Target As Range)
-    Const UsernameColumn As Integer = 1                                                     ' Customize the column # for the username
+    Const AuthorColumn As Integer = 1                                                     ' Customize the column # for the username
     Const DateColumn As Integer = 2                                                         ' Customize the column # for the date
     Const TimeColumn As Integer = 3                                                         ' Customize the column # for the time
 
     Dim cell As Range
-    Dim userName As String
+    Dim author As String
     Dim currentDate As String
     Dim currentTime As String
     Dim nonEmptyCount As Integer
@@ -15,7 +15,7 @@ Private Sub Worksheet_Change(ByVal Target As Range)
     On Error GoTo ExitSub                                                                   ' Ensure that this handler doesn't run if it's called by code
     Application.EnableEvents = False                                                        ' Temporarily disable events to prevent recursion
     
-    userName = Application.userName                                                         ' Get the full name of the user
+    author = Application.userName                                                         ' Get the full name of the user
     currentDate = Format(Date, "yyyy-mm-dd")                                                ' Get the current date and time
     currentTime = Format(Now, "HH:mm:ss") & ":" & Format((Timer - Int(Timer)) * 100, "00")  ' Get the current time with two-digit milliseconds
     
@@ -25,7 +25,7 @@ Private Sub Worksheet_Change(ByVal Target As Range)
         isCellBeingUpdated = False                                                          ' Initialize the flag to check if the target cell is the only non-empty one
         
         For i = 1 To lastColumn                                                             ' Check each cell in the row (excluding the date, time, and username columns)
-            If i <> DateColumn And i <> TimeColumn And i <> UsernameColumn Then
+            If i <> DateColumn And i <> TimeColumn And i <> AuthorColumn Then
                 If Me.Cells(cell.Row, i).Value <> "" Then
                     nonEmptyCount = nonEmptyCount + 1
                     If Me.Cells(cell.Row, i).Address = cell.Address Then                    ' Check if the non-empty cell is the one being changed
@@ -36,11 +36,11 @@ Private Sub Worksheet_Change(ByVal Target As Range)
         Next i
         
         If nonEmptyCount = 1 And isCellBeingUpdated Then                                    ' If only one cell in the row is non-empty and it's the cell being changed
-            Me.Cells(cell.Row, UsernameColumn).Value = userName                             ' Update the username column with the user's full name
+            Me.Cells(cell.Row, AuthorColumn).Value = author                             ' Update the username column with the user's full name
             Me.Cells(cell.Row, DateColumn).Value = currentDate                              ' Update the date column with the current date
             Me.Cells(cell.Row, TimeColumn).Value = currentTime                              ' Update the time column with the current time including two-digit milliseconds
         ElseIf nonEmptyCount = 0 Then                                                       ' If the entire row (excluding the date, time, and username columns) is empty, clear the date, time, and username columns
-            Me.Cells(cell.Row, UsernameColumn).ClearContents
+            Me.Cells(cell.Row, AuthorColumn).ClearContents
             Me.Cells(cell.Row, DateColumn).ClearContents
             Me.Cells(cell.Row, TimeColumn).ClearContents
         End If
