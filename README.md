@@ -4,6 +4,10 @@
 
 ![Image of workbook using Worksheet_Change() handler](image-workbook.png)
 
+## Requirements
+
+`.xlsm` file with macros enabled and `Developer` tab added to ribbon.
+
 ## Adding to VBAProject
 
 These are the steps to add the code from `/Microsoft Excel Objects/Sheet.txt` in Excel.
