@@ -8,9 +8,10 @@ Private Sub Worksheet_Change(ByVal Target As Range)
     Dim userName As String
     Dim currentDate As String
     Dim currentTime As String
-    Dim rowIsEmpty As Boolean
+    Dim nonEmptyCount As Integer
     Dim lastColumn As Integer
     Dim i As Integer
+    Dim isCellBeingUpdated As Boolean
     
     ' Ensure that this handler doesn't run if it's called by code
     On Error GoTo ExitSub
@@ -32,33 +33,36 @@ Private Sub Worksheet_Change(ByVal Target As Range)
         ' Get the last column in the used range of the worksheet
         lastColumn = Me.Cells(cell.Row, Me.Columns.Count).End(xlToLeft).Column
         
-        ' Assume the row is empty
-        rowIsEmpty = True
+        ' Initialize the non-empty cell counter and flag to check if the target cell is the only non-empty one
+        nonEmptyCount = 0
+        isCellBeingUpdated = False
         
-        ' Check if any cell in the row (excluding the date, time, and username columns) is not empty
+        ' Check each cell in the row (excluding the date, time, and username columns)
         For i = 1 To lastColumn
             If i <> DateColumn And i <> TimeColumn And i <> UsernameColumn Then
                 If Me.Cells(cell.Row, i).Value <> "" Then
-                    rowIsEmpty = False
-                    Exit For
+                    nonEmptyCount = nonEmptyCount + 1
+                    ' Check if the non-empty cell is the one being changed
+                    If Me.Cells(cell.Row, i).Address = cell.Address Then
+                        isCellBeingUpdated = True
+                    End If
                 End If
             End If
         Next i
         
-        If rowIsEmpty Then
+        ' If only one cell in the row is non-empty and it's the cell being changed
+        If nonEmptyCount = 1 And isCellBeingUpdated Then
+            ' Update the username column with the user's full name
+            Me.Cells(cell.Row, UsernameColumn).Value = userName
+            ' Update the date column with the current date
+            Me.Cells(cell.Row, DateColumn).Value = currentDate
+            ' Update the time column with the current time including two-digit milliseconds
+            Me.Cells(cell.Row, TimeColumn).Value = currentTime
+        ElseIf nonEmptyCount = 0 Then
             ' If the entire row (excluding the date, time, and username columns) is empty, clear the date, time, and username columns
             Me.Cells(cell.Row, UsernameColumn).ClearContents
             Me.Cells(cell.Row, DateColumn).ClearContents
             Me.Cells(cell.Row, TimeColumn).ClearContents
-        Else
-            ' Update the username column with the user's full name
-            Me.Cells(cell.Row, UsernameColumn).Value = userName
-
-            ' Update the date column with the current date
-            Me.Cells(cell.Row, DateColumn).Value = currentDate
-            
-            ' Update the time column with the current time including two-digit milliseconds
-            Me.Cells(cell.Row, TimeColumn).Value = currentTime
         End If
     Next cell
     
