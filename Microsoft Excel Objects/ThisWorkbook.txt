@@ -1,0 +1,37 @@
+Private Sub Workbook_BeforeSave(ByVal SaveAsUI As Boolean, Cancel As Boolean)
+    Dim ws As Worksheet
+    Dim lastRowTable As Long
+    Dim lastRowCells As Long
+    Dim lastRow As Long
+    Dim tbl As ListObject
+    
+    ' Specify the name of the sheet you are working with
+    Set ws = ThisWorkbook.Sheets("Sheet1")
+    
+    ' Initialize the row variables
+    lastRowTable = 1
+    lastRowCells = 1
+    
+    ' Check for any tables in the worksheet
+    If ws.ListObjects.Count > 0 Then
+        For Each tbl In ws.ListObjects
+            ' Find the last row of each table
+            lastRowTable = Application.WorksheetFunction.Max(lastRowTable, tbl.Range.Rows.Count + tbl.Range.Row - 1)
+        Next tbl
+    End If
+    
+    ' Find the last row with data in any column (outside of tables)
+    lastRowCells = ws.Cells(ws.Rows.Count, 1).End(xlUp).Row
+    For i = 1 To ws.Columns.Count
+        lastRowCells = Application.WorksheetFunction.Max(lastRowCells, ws.Cells(ws.Rows.Count, i).End(xlUp).Row)
+    Next i
+    
+    ' Determine the greater of the two
+    lastRow = Application.WorksheetFunction.Max(lastRowTable, lastRowCells)
+    
+    ' Insert a new row immediately after the last row with data
+    ws.Rows(lastRow + 1).Insert Shift:=xlDown
+    
+    ' Optional: You can add data to the new row or perform other actions here
+    ' ws.Cells(lastRow + 1, 1).Value = "New Data"
+End Sub
