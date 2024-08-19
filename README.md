@@ -1,5 +1,3 @@
-![Image of workbook using Worksheet_Change() handler](image-workbook.png)
-
 # Changelog in Excel
 
 `Worksheet_Change()` handler for automatically registrering metadata (author, date, time) in a changelog sheet.
@@ -14,6 +12,8 @@ These are the logical conditions that determine when rows are updated by the han
         - Remove metadata
 
 _Updates to metadata are determined only by the first cell value added (or the last remaining) in a column other than metadata columns. The intent is to only capture metadata for a row when it is added to the changelog, by avoiding metadata updates when additional columns are added, changed, or corrected._
+
+![Image of workbook using Worksheet_Change() handler](image-workbook.png)
 
 ## Requirements
 
